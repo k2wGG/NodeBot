@@ -1,0 +1,34 @@
+{# templates/discord_filters_add.html #}
+{% extends 'base.html' %}
+
+{% block title %}Добавить Discord-фильтр{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Добавить Discord-фильтр</h1>
+    <form method="post">
+      <div class="form-group">
+        <label for="user_id">Telegram User:</label>
+        <select class="form-control" id="user_id" name="user_id" required>
+          {% for u in users %}
+            <option value="{{ u.id }}">{{ u.username or u.telegram_id }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="channel_id">Discord Channel:</label>
+        <select class="form-control" id="channel_id" name="channel_id" required>
+          {% for c in channels %}
+            <option value="{{ c.id }}">{{ c.channel_id }} ({{ c.channel_name }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="keyword">Ключевое слово:</label>
+        <input type="text" class="form-control" id="keyword" name="keyword" required>
+      </div>
+      <button type="submit" class="btn btn-success">✅ Добавить</button>
+      <a href="{{ url_for('discord_filters_view') }}" class="btn btn-secondary ml-2">Отмена</a>
+    </form>
+  </div>
+{% endblock %}

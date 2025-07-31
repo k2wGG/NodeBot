@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Заявка №{{ fb.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Заявка №{{ fb.id }}</h4>
+      <small class="text-muted">
+        {%- if fb.created_at %}
+          {{ fb.created_at.strftime("%Y-%m-%d %H:%M") }}
+        {%- else %}
+          —
+        {%- endif %}
+      </small>
+    </div>
+    <div class="card-body">
+      <dl class="row">
+        <dt class="col-sm-3">Пользователь</dt>
+        <dd class="col-sm-9">{{ fb.telegram_id }}</dd>
+
+        <dt class="col-sm-3">Заголовок</dt>
+        <dd class="col-sm-9">{{ fb.title }}</dd>
+
+        <dt class="col-sm-3">Описание</dt>
+        <dd class="col-sm-9">{{ fb.description|nl2br }}</dd>
+
+        {% if fb.url %}
+        <dt class="col-sm-3">Ссылка</dt>
+        <dd class="col-sm-9">
+          <a href="{{ fb.url }}" target="_blank" class="text-primary">
+            {{ fb.url }}
+          </a>
+        </dd>
+        {% endif %}
+
+        <dt class="col-sm-3">Статус</dt>
+        <dd class="col-sm-9">
+          <span class="badge
+            {% if fb.status == 'Новая' %} badge-primary
+            {% elif fb.status == 'В работе' %} badge-warning
+            {% elif fb.status == 'Закрыта' %} badge-secondary
+            {% else %} badge-light{% endif %}">
+            {{ fb.status }}
+          </span>
+        </dd>
+
+        <dt class="col-sm-3">Прогресс</dt>
+        <dd class="col-sm-9">
+          {% set pct = (fb.progress.rstrip('%') if fb.progress else "0")|int %}
+          <div class="progress" style="height: 1.25rem;">
+            <div
+              id="prog-{{ fb.id }}"
+              class="progress-bar"
+              role="progressbar"
+              style="width: {{ pct }}%"
+              aria-valuenow="{{ pct }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              {{ pct }}%
+            </div>
+          </div>
+        </dd>
+      </dl>
+    </div>
+
+    <div class="card-footer text-right">
+      <a href="{{ url_for('feedbacks_list') }}" class="btn btn-outline-secondary mr-2">
+        ← Список заявок
+      </a>
+      <a href="{{ url_for('feedbacks_edit', fb_id=fb.id) }}" class="btn btn-warning">
+        Редактировать
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <!-- Если нужна плавная анимация, добавь transition через JS ниже, иначе не нужен скрипт -->
+  <!--
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var bar = document.getElementById('prog-{{ fb.id }}');
+      if (bar) {
+        bar.style.transition = "width 1s";
+        bar.style.width = '{{ pct }}%';
+      }
+    });
+  </script>
+  -->
+{% endblock %}

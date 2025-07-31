@@ -1,0 +1,53 @@
+{# templates/discord_announcements.html #}
+{% extends 'base.html' %}
+
+{% block title %}Discord-Анонсы{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Последние сохранённые анонсы из Discord</h1>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Канал (Discord)</th>
+          <th>Telegram User</th>
+          <th>Содержимое</th>
+          <th>Дата</th>
+          <th>Ключевое слово</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in announcements %}
+          <tr>
+            <td>{{ a.id }}</td>
+            <td>
+              {{ channels[a.channel_id].channel_name or channels[a.channel_id].channel_id }}
+            </td>
+            <td>{{ users[a.user_id].username or users[a.user_id].telegram_id }}</td>
+            <td style="max-width:300px; word-wrap:break-word;">
+              {{ a.translated or a.content }}
+            </td>
+            <td>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ a.matched_filter or '—' }}</td>
+            <td>
+              <form action="{{ url_for('delete_discord_announcement', ann_id=a.id) }}"
+                    method="post"
+                    style="display:inline-block;"
+                    onsubmit='return confirm("Удалить анонс ID {{ a.id }}?");'>
+                <button type="submit" class="btn btn-sm btn-danger">
+                  🗑 Удалить
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center">Нет анонсов.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Рассылка{% endblock %}
+
+{% block content %}
+<div class="card mx-auto mt-4" style="max-width: 700px;">
+  <div class="card-header bg-warning text-dark">
+    <h5 class="mb-0">Отправка рассылки</h5>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      <div class="form-group">
+        <label for="broadcast_text">Текст рассылки</label>
+        <textarea
+          id="broadcast_text"
+          name="broadcast_text"
+          class="form-control"
+          rows="6"
+          maxlength="2000"
+          placeholder="Введите сообщение для отправки всем каналам"
+          required
+          autofocus
+          aria-label="Текст рассылки"
+        ></textarea>
+        <small class="form-text text-muted">
+          Лимит: 2000 символов. Осталось <span id="charsLeft">2000</span>.
+        </small>
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Отмена</a>
+        <button type="submit" class="btn btn-warning">Отправить</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    $(function() {
+      const maxLen = 2000;
+      $('#broadcast_text').on('input', function() {
+        let left = maxLen - $(this).val().length;
+        $('#charsLeft').text(left >= 0 ? left : 0);
+        if (left < 0) {
+          $(this).val($(this).val().substring(0, maxLen));
+        }
+      });
+      $('#broadcast_text').focus();
+    });
+  </script>
+{% endblock %}

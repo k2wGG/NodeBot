@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  admin:
+    build: .
+    container_name: admin_panel
+    working_dir: /app
+    command: python admin.py
+    restart: always
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      FLASK_SECRET_KEY: supersecretkey
+      TELEGRAM_TOKEN: "${TELEGRAM_TOKEN}"
+      DATABASE_URL: "${DATABASE_URL}"
+      ADMIN_IDS: "${ADMIN_IDS}"
+    ports:
+      - "127.0.0.1:5000:5000"
+
+  telegram-bot:
+    build: .
+    container_name: telegram_bot
+    working_dir: /app
+    command: python bot.py
+    restart: always
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      TELEGRAM_TOKEN: "${TELEGRAM_TOKEN}"
+      DATABASE_URL: "${DATABASE_URL}"
+      ADMIN_IDS: "${ADMIN_IDS}"
+
+  discord-bot:
+    build: .
+    container_name: discord_bot
+    working_dir: /app
+    command: python discord_client.py
+    restart: always
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      TELEGRAM_TOKEN: "${TELEGRAM_TOKEN}"
+      DISCORD_BOT_TOKEN: "${DISCORD_BOT_TOKEN}"
+      DATABASE_URL: "${DATABASE_URL}"
+      DISCORD_GUILD_ID: "${DISCORD_GUILD_ID}"
+      ADMIN_IDS: "${ADMIN_IDS}"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - admin
+
+volumes:
+  db_data:

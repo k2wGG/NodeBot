@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Каналы{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Каналы</h2>
+    <a href="{{ url_for('add_channel') }}" class="btn btn-success">
+      <i class="fas fa-plus"></i> Добавить канал
+    </a>
+  </div>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Chat ID</th>
+            <th scope="col">Название</th>
+            <th scope="col">Автокомментарий</th>
+            <th scope="col">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if channels %}
+            {% for ch in channels %}
+              <tr>
+                <td>{{ ch.id }}</td>
+                <td>{{ ch.chat_id }}</td>
+                <td>{{ ch.name }}</td>
+                <td>{{ ch.auto_comment or '—' }}</td>
+                <td>
+                  <a href="{{ url_for('edit_channel', channel_id=ch.id) }}"
+                     class="btn btn-sm btn-outline-primary" title="Изменить">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form action="{{ url_for('delete_channel', channel_id=ch.id) }}"
+                        method="post"
+                        style="display: inline;"
+                        onsubmit="return confirm('Удалить канал «{{ ch.name or ch.chat_id }}»?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted">Каналов пока нет</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mt-2 text-right text-muted">
+    Всего каналов: {{ channels|length }}
+  </div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Редактировать заявку{% endblock %}
+{% block content %}
+  <h1>Редактировать заявку ID {{ fb.id }}</h1>
+  <form method="post">
+    <div class="form-group">
+      <label>Описание</label>
+      <textarea class="form-control" rows="3" readonly>{{ fb.description }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="status">Статус</label>
+      <select id="status" name="status" class="form-control">
+        {% for s in ["Новая","В работе","Завершена"] %}
+          <option value="{{ s }}" {% if fb.status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="progress">Прогресс (%)</label>
+      <input id="progress" name="progress" type="text" class="form-control" value="{{ fb.progress }}">
+    </div>
+    <button type="submit" class="btn btn-success">Сохранить</button>
+    <a href="{{ url_for('feedbacks_list') }}" class="btn btn-secondary ml-2">Отмена</a>
+  </form>
+{% endblock %}

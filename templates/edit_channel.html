@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Редактировать канал{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px; margin-top: 20px;">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">Редактировать канал</h5>
+  </div>
+  <div class="card-body">
+    <form method="post" id="editChannelForm">
+      <div class="form-group">
+        <label for="chat_id">ID или username канала</label>
+        <input
+          type="text"
+          id="chat_id"
+          name="chat_id"
+          class="form-control"
+          placeholder="@channel_username или числовой ID"
+          value="{{ channel.chat_id }}"
+          required
+          autofocus
+        >
+        <small class="form-text text-muted">
+          Пример: @example_channel или 1234567890
+        </small>
+      </div>
+      <div class="form-group mt-3">
+        <label for="name">Название канала</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          placeholder="Читабельное имя канала"
+          value="{{ channel.name }}"
+          required
+        >
+      </div>
+      <div class="form-group mt-3">
+        <label for="auto_comment">Автокомментарий</label>
+        <textarea
+          id="auto_comment"
+          name="auto_comment"
+          class="form-control"
+          placeholder="Сообщение при новых постах (Markdown поддержка)"
+          rows="3"
+        >{{ channel.auto_comment or '' }}</textarea>
+        <small class="form-text text-muted">
+          Оставьте пустым, если автокомментарий не требуется.
+        </small>
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('channels_view') }}" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-info">Сохранить изменения</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    $(document).ready(function(){
+      $('#editChannelForm').on('submit', function() {
+        $(this).find('button[type="submit"]').prop('disabled', true);
+      });
+      $('#chat_id').focus();
+    });
+  </script>
+{% endblock %}

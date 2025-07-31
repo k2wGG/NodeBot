@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+  <h1>Подробная статистика</h1>
+  <p>Пользователей: {{ user_count }}</p>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      {% set labels = stats_data | map(attribute='category') | list | tojson %}
+      {% set counts = stats_data | map(attribute='count')    | list | tojson %}
+      <canvas
+        id="postsChart"
+        data-labels='{{ labels }}'
+        data-counts='{{ counts }}'
+        height="100"
+      ></canvas>
+    </div>
+  </div>
+
+  <table class="table table-bordered">
+    <thead class="thead-light">
+      <tr>
+        <th>Категория</th>
+        <th>Постов</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in stats_data %}
+        <tr>
+          <td>{{ item.category }}</td>
+          <td>{{ item.count }}</td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="2" class="text-center text-muted">Нет данных</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block scripts %}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      const canvas = document.getElementById('postsChart');
+      if (!canvas) return;
+
+      const labels = JSON.parse(canvas.dataset.labels || "[]");
+      const data   = JSON.parse(canvas.dataset.counts || "[]");
+
+      if (labels.length && data.length) {
+        new Chart(canvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Постов по категориям',
+              data: data,
+              backgroundColor: 'rgba(54, 162, 235, 0.5)',
+              borderColor:     'rgba(54, 162, 235, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { precision: 0 }
+              }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      }
+    });
+  </script>
+{% endblock %}

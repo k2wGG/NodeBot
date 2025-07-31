@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Категории{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Категории</h2>
+  <a href="{{ url_for('add_category') }}" class="btn btn-success">Добавить категорию</a>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" style="width:5%">ID</th>
+          <th scope="col" style="width:70%">Название</th>
+          <th scope="col" style="width:25%">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category, level in tree %}
+        <tr>
+          <td>{{ category.id }}</td>
+          <td>
+            {% for i in range(level) %}&nbsp;&nbsp;&nbsp;{% endfor %}
+            {{ '📁' if level == 0 else '📄' }} {{ category.name }}
+          </td>
+          <td>
+            <a href="{{ url_for('edit_category', category_id=category.id) }}"
+               class="btn btn-sm btn-outline-primary me-2" title="Изменить категорию">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form action="{{ url_for('delete_category', category_id=category.id) }}"
+                  method="post" style="display:inline">
+              <button type="submit"
+                      class="btn btn-sm btn-outline-danger"
+                      onclick="return confirm('Удалить «{{ category.name }}»?')"
+                      title="Удалить категорию">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

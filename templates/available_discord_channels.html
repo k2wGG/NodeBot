@@ -1,0 +1,100 @@
+{# templates/available_discord_channels.html #}
+{% extends 'base.html' %}
+
+{% block title %}Доступные Discord-каналы{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Список доступных Discord-каналов</h1>
+
+    <!-- Верхняя панель: кнопка Добавить и кнопка Активировать выбранные -->
+    <div class="mb-3">
+      <a href="{{ url_for('add_available_discord_channel') }}" class="btn btn-primary">
+        ➕ Добавить новый канал
+      </a>
+      <!-- Кнопка массовой активации: отправляет POST на /available_discord_channels -->
+      <button type="submit" form="bulkForm" class="btn btn-success ml-2">
+        ✅ Активировать выбранные
+      </button>
+    </div>
+
+    <!-- Форма для массовой активации: вся таблица внутри одной формы -->
+    <form id="bulkForm" method="post" action="{{ url_for('available_discord_channels_view') }}">
+      <table class="table table-bordered table-hover">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">
+              <!-- Заголовок для чекбоксов: метка / можно добавить «выбрать все» через JS -->
+              <input type="checkbox" id="select-all" />
+            </th>
+            <th scope="col">ID</th>
+            <th scope="col">Имя канала</th>
+            <th scope="col">Discord ID</th>
+            <th scope="col">Last Seen</th>
+            <th scope="col">Активен?</th>
+            <th scope="col">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ch in channels %}
+            <tr {% if not ch.is_active %}class="table-secondary"{% endif %}>
+              <td>
+                <input type="checkbox" name="selected_ids" value="{{ ch.id }}"
+                       {% if ch.is_active %}checked disabled{% endif %} />
+              </td>
+              <td>{{ ch.id }}</td>
+              <td>{{ ch.channel_name }}</td>
+              <td>{{ ch.channel_id }}</td>
+              <td>{{ ch.last_seen.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>
+                {% if ch.is_active %}
+                  <span class="badge badge-success">Да</span>
+                {% else %}
+                  <span class="badge badge-danger">Нет</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{{ url_for('edit_available_discord_channel', adc_id=ch.id) }}"
+                   class="btn btn-sm btn-warning">
+                  ✏️ Редактировать
+                </a>
+                <form action="{{ url_for('delete_available_discord_channel', adc_id=ch.id) }}"
+                      method="post"
+                      style="display:inline-block; margin-left: 5px;"
+                      onsubmit='return confirm("Деактивировать канал «{{ ch.channel_name }}»?");'>
+                  <button type="submit" class="btn btn-sm btn-danger">
+                    🗑 Деактивировать
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="7" class="text-center">Нет доступных каналов.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    // “Выбрать все / Снять все” при клике на #select-all
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectAllToggle = document.getElementById('select-all');
+      if (!selectAllToggle) return;
+
+      selectAllToggle.addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+        checkboxes.forEach(ch => {
+          // Активные каналы уже disabled, мы не трогаем их
+          if (!ch.disabled) {
+            ch.checked = selectAllToggle.checked;
+          }
+        });
+      });
+    });
+  </script>
+{% endblock %}

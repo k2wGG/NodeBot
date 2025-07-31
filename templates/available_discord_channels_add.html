@@ -1,0 +1,20 @@
+{# templates/available_discord_channels_add.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Добавить новый Discord-канал</h1>
+    <form method="post">
+      <div class="mb-3">
+        <label for="channel_id" class="form-label">Discord ID канала:</label>
+        <input type="text" class="form-control" id="channel_id" name="channel_id" required>
+      </div>
+      <div class="mb-3">
+        <label for="channel_name" class="form-label">Имя канала (название в Discord):</label>
+        <input type="text" class="form-control" id="channel_name" name="channel_name" required>
+      </div>
+      <button type="submit" class="btn btn-success">✅ Добавить</button>
+      <a href="{{ url_for('available_discord_channels_view') }}" class="btn btn-secondary ms-2">Отмена</a>
+    </form>
+  </div>
+{% endblock %}

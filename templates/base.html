@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block title %}Админ Панель{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css"
+  />
+
+  <!-- Select2 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/71f066aa2b.js" crossorigin="anonymous"></script>
+
+  <style>
+    body { padding-top: 70px; }
+    .content { padding: 20px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="{{ url_for('dashboard') }}">Админ Панель</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarAdmin"
+      aria-controls="navbarAdmin"
+      aria-expanded="false"
+      aria-label="Переключить навигацию"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarAdmin">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-tachometer-alt"></i> Панель
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="postsDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <i class="fas fa-file-alt"></i> Посты
+          </a>
+          <div class="dropdown-menu" aria-labelledby="postsDropdown">
+            <a class="dropdown-item" href="{{ url_for('posts_view') }}">Активные</a>
+            <a class="dropdown-item" href="{{ url_for('posts_view', archived=1) }}">Архив</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('add_post') }}">
+              <i class="fas fa-plus"></i> Новый пост
+            </a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('categories_view') }}">
+            <i class="fas fa-folder"></i> Категории
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('channels_view') }}">
+            <i class="fas fa-comments"></i> Каналы
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('feedbacks_list') }}">
+            <i class="fas fa-inbox"></i> Заявки
+          </a>
+        </li>
+
+        <!-- === Раздел Discord === -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="discordDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <i class="fab fa-discord"></i> Discord
+          </a>
+          <div class="dropdown-menu" aria-labelledby="discordDropdown">
+            <a class="dropdown-item" href="{{ url_for('discord_channels_view') }}">
+              <i class="fas fa-list"></i> Подписки (Discord-каналы)
+            </a>
+            <a class="dropdown-item" href="{{ url_for('discord_filters_view') }}">
+              <i class="fas fa-filter"></i> Фильтры
+            </a>
+            <a class="dropdown-item" href="{{ url_for('discord_announcements_view') }}">
+              <i class="fas fa-newspaper"></i> Анонсы
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('available_discord_channels_view') }}">
+              <i class="fas fa-check-square"></i> Доступные каналы
+            </a>
+          </div>
+        </li>
+        <!-- === Конец раздела Discord === -->
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('broadcast') }}">
+            <i class="fas fa-bullhorn"></i> Рассылка
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('stats') }}">
+            <i class="fas fa-chart-bar"></i> Статистика
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div
+            class="alert alert-{{ 'danger' if category=='error' else 'success' }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Закрыть">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- jQuery + Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  
+  {% block scripts %}{% endblock %}
+</body>
+</html>

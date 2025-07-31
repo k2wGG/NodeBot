@@ -1,0 +1,10 @@
+python-telegram-bot==20.7
+SQLAlchemy==1.4.46
+Flask==2.0.3
+Werkzeug==2.0.3
+python-dotenv
+discord.py-self  # если нужен self-bot, иначе просто discord.py
+alembic          # опционально, для миграций БД
+rapidfuzz        # опционально, для fuzzy-поиска
+httpx==0.23.3          # опционально, для HTTP-запросов
+googletrans==4.0.0-rc1

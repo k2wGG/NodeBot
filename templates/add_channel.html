@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Добавить канал{% endblock %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px; margin-top: 20px;">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">Добавить новый канал</h5>
+  </div>
+  <div class="card-body">
+    {% if error %}
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post" autocomplete="off">
+      <div class="form-group">
+        <label for="chat_id">ID или username канала</label>
+        <input
+          type="text"
+          id="chat_id"
+          name="chat_id"
+          class="form-control"
+          placeholder="@channel_username или числовой ID"
+          required
+          minlength="3"
+          maxlength="64"
+          autofocus
+          aria-label="ID или username канала"
+        >
+      </div>
+      <div class="form-group mt-3">
+        <label for="name">Название канала</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          placeholder="Читабельное имя канала"
+          required
+          maxlength="128"
+          aria-label="Название канала"
+        >
+      </div>
+      <div class="form-group mt-3">
+        <label for="auto_comment">Автокомментарий</label>
+        <textarea
+          id="auto_comment"
+          name="auto_comment"
+          class="form-control"
+          placeholder="Сообщение при новых постах (Markdown поддержка)"
+          rows="3"
+          maxlength="500"
+          aria-label="Автокомментарий"
+        ></textarea>
+        <small class="form-text text-muted">
+          Можно использовать <a href="https://core.telegram.org/bots/api#markdown-style" target="_blank">Markdown</a>.<br>
+          Оставьте пустым, если не нужно.
+        </small>
+      </div>
+      <div class="mt-4 d-flex justify-content-between">
+        <a href="{{ url_for('channels_view') }}" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-info">Добавить канал</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

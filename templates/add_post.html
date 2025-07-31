@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Добавить новый пост{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+      Добавить новый пост
+    </div>
+    <div class="card-body">
+      <form method="post" action="{{ url_for('add_post') }}" autocomplete="off">
+        <!-- Заголовок -->
+        <div class="form-group">
+          <label for="title">Заголовок</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            placeholder="Введите заголовок поста"
+            required
+            maxlength="150"
+            autofocus
+            aria-label="Заголовок"
+          >
+          <small class="form-text text-muted">
+            Максимум 150 символов.
+          </small>
+        </div>
+
+        <!-- Ссылка -->
+        <div class="form-group">
+          <label for="link">Ссылка</label>
+          <input
+            type="url"
+            class="form-control"
+            id="link"
+            name="link"
+            pattern="https://.*"
+            maxlength="255"
+            placeholder="https://t.me/ваш_канал/123"
+            required
+            aria-label="Ссылка"
+          >
+          <small class="form-text text-muted">
+            Только Telegram-ссылки, начинающиеся с <code>https://</code>
+          </small>
+        </div>
+
+        <!-- Категория -->
+        <div class="form-group">
+          <label for="category_id">Категория</label>
+          <select
+            class="form-control select2"
+            id="category_id"
+            name="category_id"
+            required
+            aria-label="Категория"
+          >
+            <option value="">Выберите категорию...</option>
+            {% for cat, lvl in tree %}
+              <option
+                value="{{ cat.id }}"
+                data-level="{{ lvl }}"
+              >
+                {{ '  ' * lvl }}{% if lvl==0 %}📁{% else %}📄{% endif %} {{ cat.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Дата начала активности -->
+        <div class="form-group">
+          <label for="start_date">Дата начала активности</label>
+          <input
+            type="date"
+            class="form-control"
+            id="start_date"
+            name="start_date"
+            aria-label="Дата начала"
+          >
+          <small class="form-text text-muted">
+            Если оставить пустым — пост появится сразу.
+          </small>
+        </div>
+
+        <!-- Дата окончания активности -->
+        <div class="form-group">
+          <label for="end_date">Дата окончания активности</label>
+          <input
+            type="date"
+            class="form-control"
+            id="end_date"
+            name="end_date"
+            aria-label="Дата окончания"
+          >
+          <small class="form-text text-muted">
+            После этой даты пост будет автоматически отправлен в архив.
+          </small>
+        </div>
+
+        <!-- Кнопки -->
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-plus"></i> Добавить пост
+        </button>
+        <a href="{{ url_for('posts_view') }}" class="btn btn-secondary">
+          Отмена
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <!-- Инициализация select2 + проверка дат -->
+  <script>
+    $(function(){
+      $('#category_id').select2();
+
+      // Чтобы нельзя было выбрать end_date раньше start_date
+      $('#start_date, #end_date').on('change', function(){
+        let start = $('#start_date').val();
+        let end = $('#end_date').val();
+        if (start && end && end < start) {
+          $('#end_date')[0].setCustomValidity('Дата окончания не может быть раньше даты начала');
+        } else {
+          $('#end_date')[0].setCustomValidity('');
+        }
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки от пользователей{% endblock %}
+
+{% block content %}
+  <h1>Заявки от пользователей</h1>
+  <p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Назад</a>
+  </p>
+  {% if feedbacks %}
+    <table class="table table-striped table-bordered table-hover">
+      <thead>
+        <tr>
+          <th style="width:5%">ID</th>
+          <th style="width:12%">Пользователь</th>
+          <th style="width:30%">Заголовок</th>
+          <th style="width:10%">Статус</th>
+          <th style="width:16%">Прогресс</th>
+          <th style="width:17%">Дата</th>
+          <th style="width:15%">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for fb in feedbacks %}
+        <tr>
+          <td>{{ fb.id }}</td>
+          <td>{{ fb.telegram_id }}</td>
+          <td style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            {{ fb.title }}
+          </td>
+          <td>
+            <span class="badge
+              {% if fb.status == 'Новая' %}badge-primary
+              {% elif fb.status == 'В работе' %}badge-warning
+              {% elif fb.status == 'Закрыта' %}badge-secondary
+              {% else %}badge-light{% endif %}">
+              {{ fb.status }}
+            </span>
+          </td>
+          <td>
+            {% set pct = (fb.progress.rstrip('%') if fb.progress else "0")|int %}
+            <div class="progress" style="height: 1.2em;">
+              <div class="progress-bar
+                {% if pct >= 100 %}bg-success
+                {% elif pct >= 50 %}bg-info
+                {% else %}bg-warning{% endif %}"
+                role="progressbar"
+                style="width: {{ pct }}%"
+                aria-valuenow="{{ pct }}"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ pct }}%
+              </div>
+            </div>
+          </td>
+          <td>
+            {% if fb.created_at %}
+              {{ fb.created_at.strftime("%Y-%m-%d %H:%M") }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('feedbacks_view', fb_id=fb.id) }}" class="btn btn-sm btn-info">Просмотр</a>
+            <a href="{{ url_for('feedbacks_edit', fb_id=fb.id) }}" class="btn btn-sm btn-warning">Правка</a>
+            <form action="{{ url_for('feedbacks_delete', fb_id=fb.id) }}" method="post" style="display:inline">
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Удалить заявку {{ fb.id }}?');">Удалить</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Заявок пока нет.</p>
+  {% endif %}
+{% endblock %}

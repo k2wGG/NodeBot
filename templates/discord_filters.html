@@ -1,0 +1,60 @@
+{# templates/discord_filters.html #}
+{% extends 'base.html' %}
+
+{% block title %}Discord-фильтры{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1>Фильтры для Discord-каналов</h1>
+    <a href="{{ url_for('add_discord_filter') }}" class="btn btn-primary mb-3">
+      <i class="fas fa-plus"></i> Добавить фильтр
+    </a>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Telegram User</th>
+          <th>Discord Channel ID</th>
+          <th>Ключевое слово</th>
+          <th>Активный?</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in filters %}
+          <tr {% if not f.active %}class="table-secondary"{% endif %}>
+            <td>{{ f.id }}</td>
+            <td>{{ users[f.user_id].username or users[f.user_id].telegram_id }}</td>
+            <td>{{ channels[f.channel_id].channel_id }}</td>
+            <td>{{ f.keyword }}</td>
+            <td>
+              {% if f.active %}
+                <span class="badge badge-success">Да</span>
+              {% else %}
+                <span class="badge badge-danger">Нет</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('edit_discord_filter', filter_id=f.id) }}"
+                 class="btn btn-sm btn-warning">
+                ✏️ Редактировать
+              </a>
+              <form action="{{ url_for('delete_discord_filter', filter_id=f.id) }}"
+                    method="post"
+                    style="display:inline-block; margin-left: 5px;"
+                    onsubmit='return confirm("Удалить фильтр «{{ f.keyword }}»?");'>
+                <button type="submit" class="btn btn-sm btn-danger">
+                  🗑 Удалить
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center">Нет фильтров.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

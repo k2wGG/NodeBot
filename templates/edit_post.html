@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Редактировать пост №{{ post.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+      Редактировать пост
+    </div>
+    <div class="card-body">
+      <form method="post" id="editPostForm" action="{{ url_for('edit_post', post_id=post.id) }}">
+        <!-- Заголовок -->
+        <div class="form-group">
+          <label for="title">Заголовок</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            value="{{ post.title }}"
+            required
+            autocomplete="off"
+          >
+        </div>
+
+        <!-- Ссылка -->
+        <div class="form-group">
+          <label for="link">Ссылка</label>
+          <input
+            type="url"
+            class="form-control"
+            id="link"
+            name="link"
+            value="{{ post.link }}"
+            required
+            autocomplete="off"
+            placeholder="https://t.me/..."
+          >
+        </div>
+
+        <!-- Категория -->
+        <div class="form-group">
+          <label for="category_id">Категория</label>
+          <select
+            class="form-control select2"
+            id="category_id"
+            name="category_id"
+            required
+          >
+            <option></option>
+            {% for cat, lvl in tree %}
+              <option
+                value="{{ cat.id }}"
+                data-level="{{ lvl }}"
+                {% if cat.id == post.category_id %}selected{% endif %}
+              >
+                {{ '  ' * lvl }}{% if lvl==0 %}📁{% else %}📄{% endif %} {{ cat.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Дата начала активности -->
+        <div class="form-group">
+          <label for="start_date">Дата начала активности</label>
+          <input
+            type="date"
+            class="form-control"
+            id="start_date"
+            name="start_date"
+            value="{{ post.start_date.isoformat() if post.start_date }}"
+          >
+          <small class="form-text text-muted">
+            Если оставить пустым — публикуем сразу.
+          </small>
+        </div>
+
+        <!-- Дата окончания активности -->
+        <div class="form-group">
+          <label for="end_date">Дата окончания активности</label>
+          <input
+            type="date"
+            class="form-control"
+            id="end_date"
+            name="end_date"
+            value="{{ post.end_date.isoformat() if post.end_date }}"
+          >
+          <small class="form-text text-muted">
+            После этой даты пост уйдёт в архив автоматически.
+          </small>
+        </div>
+
+        <!-- Кнопки -->
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Сохранить
+        </button>
+        <a href="{{ url_for('posts_view') }}" class="btn btn-secondary">
+          Отмена
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <!-- Инициализация select2 + JS-валидация -->
+  <script>
+    $(function(){
+      $('#category_id').select2();
+
+      $('#editPostForm').on('submit', function() {
+        var sd = $('#start_date').val();
+        var ed = $('#end_date').val();
+        if (sd && ed && ed < sd) {
+          alert('Дата окончания не может быть раньше даты начала!');
+          return false;
+        }
+        $(this).find('button[type="submit"]').prop('disabled', true);
+      });
+    });
+  </script>
+{% endblock %}
